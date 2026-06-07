@@ -1,7 +1,7 @@
 package com.obs.platform.controller;
 
 import com.obs.platform.common.api.Result;
-import com.obs.platform.service.NacosServiceDiscovery;
+import com.obs.platform.service.DiscoveryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,10 +14,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ServiceController {
 
-    private final NacosServiceDiscovery nacosServiceDiscovery;
+    private final DiscoveryService discoveryService;
 
     @GetMapping
     public Result<Map<String, Object>> listServices() {
-        return nacosServiceDiscovery.getServices();
+        return discoveryService.getServices();
     }
 }

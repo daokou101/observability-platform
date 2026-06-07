@@ -22,7 +22,11 @@ public class SentinelRuleService {
 
     @PostConstruct
     public void init() {
-        syncToSentinel();
+        try {
+            syncToSentinel();
+        } catch (Exception e) {
+            log.warn("[Sentinel] 启动时加载流控规则失败，可在数据库就绪后手动调用 /api/sentinel/rules/sync: {}", e.getMessage());
+        }
     }
 
     public List<SentinelFlowRule> listRules() {
