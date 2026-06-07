@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: obs-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: observability
+    ports:
+      - "3308:3306"
+    volumes:
+      - obs-mysql-data:/var/lib/mysql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --skip-character-set-client-handshake --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: obs-redis
+    ports:
+      - "6381:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: obs-rabbitmq
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nacos:
+    image: nacos/nacos-server:v2.3.2
+    container_name: obs-nacos
+    environment:
+      MODE: standalone
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_DB_NAME: nacos
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: root123
+      JVM_XMS: 256m
+      JVM_XMX: 512m
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  platform-service:
+    build:
+      context: .
+      dockerfile: platform-service/Dockerfile
+    container_name: obs-platform-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      nacos:
+        condition: service_started
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    container_name: obs-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - nacos
+      - redis
+      - rabbitmq
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: obs-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway
+
+volumes:
+  obs-mysql-data:
