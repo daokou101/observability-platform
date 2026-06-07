@@ -20,4 +20,13 @@ public interface GatewayLogMapper extends BaseMapper<GatewayLog> {
 
     @Select("SELECT COUNT(*) FROM gateway_log WHERE status_code >= 500 AND create_time >= #{since}")
     long countErrorsSince(@Param("since") String since);
+
+    @Select("SELECT DATE(create_time) label, COUNT(*) value FROM gateway_log WHERE create_time >= #{since} GROUP BY DATE(create_time) ORDER BY label")
+    List<java.util.Map<String, Object>> trendSince(@Param("since") String since);
+
+    @Select("SELECT CASE WHEN status_code LIKE '2%' THEN '2xx' WHEN status_code LIKE '4%' THEN '4xx' WHEN status_code LIKE '5%' THEN '5xx' ELSE 'other' END category, COUNT(*) value FROM gateway_log WHERE create_time >= #{since} GROUP BY category")
+    List<java.util.Map<String, Object>> statusDistribution(@Param("since") String since);
+
+    @Select("SELECT service label, COUNT(*) value FROM gateway_log WHERE create_time >= #{since} GROUP BY service ORDER BY value DESC LIMIT 10")
+    List<java.util.Map<String, Object>> topServices(@Param("since") String since);
 }

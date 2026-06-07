@@ -25,6 +25,10 @@ export function getDashboard() {
   return request.get('/logs/dashboard')
 }
 
+export function getChartData(days) {
+  return request.get('/logs/charts', { params: { days } })
+}
+
 export function queryLogs(params) {
   return request.get('/logs', { params })
 }
@@ -83,6 +87,46 @@ export function updateSentinelRule(id, data) {
 
 export function deleteSentinelRule(id) {
   return request.delete(`/sentinel/rules/${id}`)
+}
+
+export function listAlertRules() {
+  return request.get('/alerts/rules')
+}
+
+export function saveAlertRule(data) {
+  return request.post('/alerts/rules', data)
+}
+
+export function updateAlertRule(id, data) {
+  return request.put(`/alerts/rules/${id}`, data)
+}
+
+export function deleteAlertRule(id) {
+  return request.delete(`/alerts/rules/${id}`)
+}
+
+export function listAlertLogs(limit) {
+  return request.get('/alerts/logs', { params: { limit } })
+}
+
+export function listGrayscaleRules() {
+  return request.get('/grayscale')
+}
+
+export function saveGrayscaleRule(data) {
+  return request.post('/grayscale', data)
+}
+
+export function updateGrayscaleRule(id, data) {
+  return request.put(`/grayscale/${id}`, data)
+}
+
+export function deleteGrayscaleRule(id) {
+  return request.delete(`/grayscale/${id}`)
+}
+
+export function syncGrayscaleRules() {
+  return request.post('/grayscale/sync')
 }
 
 export default request

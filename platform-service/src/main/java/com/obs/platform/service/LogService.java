@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,5 +42,15 @@ public class LogService {
         stats.put("errorCount24h", gatewayLogMapper.countErrorsSince(today));
         stats.put("activeServices", gatewayLogMapper.listActiveServices());
         return stats;
+    }
+
+    public Map<String, Object> getChartData(int days) {
+        String since = LocalDate.now().minusDays(days).toString();
+
+        Map<String, Object> charts = new LinkedHashMap<>();
+        charts.put("trend", gatewayLogMapper.trendSince(since));
+        charts.put("statusDistribution", gatewayLogMapper.statusDistribution(since));
+        charts.put("topServices", gatewayLogMapper.topServices(since));
+        return charts;
     }
 }

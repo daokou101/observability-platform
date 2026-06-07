@@ -30,4 +30,9 @@ public class LogController {
     public Result<Map<String, Object>> dashboard() {
         return Result.success(logService.getDashboardStats());
     }
+
+    @GetMapping("/charts")
+    public Result<Map<String, Object>> charts(@RequestParam(defaultValue = "7") Integer days) {
+        return Result.success(logService.getChartData(days));
+    }
 }

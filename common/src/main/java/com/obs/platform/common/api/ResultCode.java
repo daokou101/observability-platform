@@ -11,7 +11,7 @@ public enum ResultCode {
     UNAUTHORIZED(40001, "未登录或 Token 已过期"),
     FORBIDDEN(40003, "无权限访问"),
     VALIDATION_ERROR(40004, "请求参数校验失败"),
-    NOT_FOUND(40004, "资源不存在"),
+    NOT_FOUND(40005, "资源不存在"),
     ERROR(50000, "服务器繁忙，请稍后重试");
 
     private final int code;

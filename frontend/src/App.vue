@@ -35,6 +35,14 @@
           <el-icon><Warning /></el-icon>
           <span>流控规则</span>
         </el-menu-item>
+        <el-menu-item index="/alerts">
+          <el-icon><Bell /></el-icon>
+          <span>告警管理</span>
+        </el-menu-item>
+        <el-menu-item index="/grayscale">
+          <el-icon><Sort /></el-icon>
+          <span>灰度路由</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
