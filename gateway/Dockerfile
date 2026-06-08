@@ -1,14 +1,11 @@
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
-COPY pom.xml .
-COPY common/pom.xml common/pom.xml
-COPY gateway/pom.xml gateway/pom.xml
-COPY platform-service/pom.xml platform-service/pom.xml
-RUN mvn dependency:go-offline -B -q
-COPY common/ common/
-RUN mvn clean install -pl common -B -q -DskipTests
-COPY gateway/ gateway/
-RUN mvn clean package -pl gateway -B -q -DskipTests
+
+# 复制整个项目（最简单，最稳定，多模块必备）
+COPY . .
+
+# 全量编译：父工程 → common → gateway（自动按顺序）
+RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app

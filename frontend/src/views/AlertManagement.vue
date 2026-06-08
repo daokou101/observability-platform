@@ -157,6 +157,7 @@ async function deleteRule(id) {
 async function toggleRule(row, enabled) {
   try {
     await updateAlertRule(row.id, { ...row, enabled })
+    row.enabled = enabled  // 立即更新本地状态，无需等待刷新
     ElMessage.success(enabled ? '已启用' : '已禁用')
   } catch (e) {
     fetchRules()

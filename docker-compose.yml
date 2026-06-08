@@ -5,6 +5,7 @@ services:
     image: mysql:8.0
     container_name: obs-mysql
     environment:
+      TZ: Asia/Shanghai
       MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: observability
     ports:
@@ -22,6 +23,8 @@ services:
   redis:
     image: redis:7-alpine
     container_name: obs-redis
+    environment:
+      TZ: Asia/Shanghai
     ports:
       - "6381:6379"
     healthcheck:
@@ -33,6 +36,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.12-management
     container_name: obs-rabbitmq
+    environment:
+      TZ: Asia/Shanghai
     ports:
       - "5673:5672"
       - "15673:15672"
@@ -46,6 +51,7 @@ services:
     image: nacos/nacos-server:v2.3.2
     container_name: obs-nacos
     environment:
+      TZ: Asia/Shanghai
       MODE: standalone
       MYSQL_SERVICE_HOST: mysql
       MYSQL_SERVICE_PORT: 3306
@@ -60,12 +66,20 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8848/nacos/actuator/health || wget -qO- http://localhost:8848/nacos/actuator/health 2>/dev/null | grep -q UP || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   platform-service:
     build:
       context: .
       dockerfile: platform-service/Dockerfile
     container_name: obs-platform-service
+    environment:
+      TZ: Asia/Shanghai
     ports:
       - "8081:8081"
     depends_on:
@@ -76,25 +90,32 @@ services:
       rabbitmq:
         condition: service_healthy
       nacos:
-        condition: service_started
+        condition: service_healthy
 
   gateway:
     build:
       context: .
       dockerfile: gateway/Dockerfile
     container_name: obs-gateway
+    environment:
+      TZ: Asia/Shanghai
     ports:
       - "8080:8080"
     depends_on:
-      - nacos
-      - redis
-      - rabbitmq
+      nacos:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: obs-frontend
+    environment:
+      TZ: Asia/Shanghai
     ports:
       - "80:80"
     depends_on:

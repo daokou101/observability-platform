@@ -1,4 +1,5 @@
--- 创建数据库
+-- 创建数据库（Nacos 也需要单独的数据库）
+CREATE DATABASE IF NOT EXISTS nacos DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE DATABASE IF NOT EXISTS observability DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE observability;

@@ -22,10 +22,31 @@ public class SentinelRuleService {
 
     @PostConstruct
     public void init() {
-        try {
-            syncToSentinel();
-        } catch (Exception e) {
-            log.warn("[Sentinel] 启动时加载流控规则失败，可在数据库就绪后手动调用 /api/sentinel/rules/sync: {}", e.getMessage());
+        initWithRetry();
+    }
+
+    private void initWithRetry() {
+        int maxRetries = 10;
+        int retryDelayMs = 3000;
+        for (int i = 0; i < maxRetries; i++) {
+            try {
+                syncToSentinel();
+                log.info("[Sentinel] 启动时流控规则同步完成");
+                return;
+            } catch (Exception e) {
+                log.warn("[Sentinel] 启动时加载流控规则失败 (第{}次重试/共{}次): {}",
+                        i + 1, maxRetries, e.getMessage());
+                if (i < maxRetries - 1) {
+                    try {
+                        Thread.sleep(retryDelayMs);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                } else {
+                    log.error("[Sentinel] 启动时加载流控规则失败，已达最大重试次数。请确认数据库就绪后调用 POST /api/sentinel/rules/sync");
+                }
+            }
         }
     }
 

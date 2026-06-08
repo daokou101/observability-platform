@@ -22,9 +22,9 @@ public class LogService {
     public PageResult<GatewayLog> queryLogs(String service, String traceId,
                                              Integer statusCode, Integer page, Integer pageSize) {
         LambdaQueryWrapper<GatewayLog> wrapper = new LambdaQueryWrapper<GatewayLog>()
-                .eq(service != null && !service.isEmpty(), GatewayLog::getService, service)
-                .eq(traceId != null && !traceId.isEmpty(), GatewayLog::getTraceId, traceId)
-                .eq(statusCode != null, GatewayLog::getStatusCode, String.valueOf(statusCode))
+                .like(service != null && !service.isEmpty(), GatewayLog::getService, service)
+                .like(traceId != null && !traceId.isEmpty(), GatewayLog::getTraceId, traceId)
+                .like(statusCode != null, GatewayLog::getStatusCode, statusCode + "%")
                 .orderByDesc(GatewayLog::getCreateTime);
 
         Page<GatewayLog> p = gatewayLogMapper.selectPage(new Page<>(page, pageSize), wrapper);

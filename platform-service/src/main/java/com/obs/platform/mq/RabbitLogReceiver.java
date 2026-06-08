@@ -23,16 +23,20 @@ public class RabbitLogReceiver {
     @RabbitListener(queues = TraceConstant.LOG_QUEUE)
     public void receive(String message) {
         try {
+            // 1. 把MQ收到的JSON字符串 → 转成 Java日志对象（GatewayLogMessage）
             GatewayLogMessage entry = JSONUtil.toBean(message, GatewayLogMessage.class);
+            // 2. 新建数据库实体对象 GatewayLog（和MySQL表对应）
             GatewayLog log = new GatewayLog();
-            log.setTraceId(entry.getTraceId());
-            log.setService(entry.getService());
-            log.setPath(entry.getPath());
-            log.setMethod(entry.getMethod());
-            log.setStatusCode(entry.getStatusCode());
-            log.setDuration(entry.getDuration());
-            log.setRequestTime(entry.getRequestTime());
-            log.setCreateTime(LocalDateTime.now());
+            log.setTraceId(entry.getTraceId());       // 全链路ID
+            log.setService(entry.getService());       // 服务名（gateway/platform-service）
+            log.setPath(entry.getPath());             // 请求路径（/test/hello）
+            log.setMethod(entry.getMethod());         // 请求方式（GET/POST）
+            log.setStatusCode(entry.getStatusCode()); // 响应状态码（200/404/500）
+            log.setDuration(entry.getDuration());     // 请求耗时（ms）
+            log.setRequestTime(entry.getRequestTime());// 请求时间
+            log.setCreateTime(LocalDateTime.now());   // 入库时间
+
+            // 4. 插入数据到 MySQL 的 gateway_log 表
             gatewayLogMapper.insert(log);
         } catch (Exception e) {
             log.error("[LogConsumer] 处理日志消息失败: {}", e.getMessage());

@@ -18,6 +18,7 @@ public class DynamicRoute {
     private String uri;
     private String predicates;
     private String filters;
+    @TableField("`order`")
     private Integer order;
     private Boolean enabled;
     private String description;
