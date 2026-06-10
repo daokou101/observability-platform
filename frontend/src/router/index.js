@@ -7,6 +7,7 @@ import SamplingConfig from '../views/SamplingConfig.vue'
 import FlowRules from '../views/FlowRules.vue'
 import AlertManagement from '../views/AlertManagement.vue'
 import GrayscaleRouting from '../views/GrayscaleRouting.vue'
+import StressTest from '../views/StressTest.vue'
 
 const routes = [
   { path: '/', name: 'Dashboard', component: Dashboard },
@@ -16,7 +17,8 @@ const routes = [
   { path: '/sampling', name: 'SamplingConfig', component: SamplingConfig },
   { path: '/flow-rules', name: 'FlowRules', component: FlowRules },
   { path: '/alerts', name: 'AlertManagement', component: AlertManagement },
-  { path: '/grayscale', name: 'GrayscaleRouting', component: GrayscaleRouting }
+  { path: '/grayscale', name: 'GrayscaleRouting', component: GrayscaleRouting },
+  { path: '/stress-test', name: 'StressTest', component: StressTest }
 ]
 
 const router = createRouter({

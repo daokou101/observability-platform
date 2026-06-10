@@ -43,6 +43,10 @@
           <el-icon><Sort /></el-icon>
           <span>灰度路由</span>
         </el-menu-item>
+        <el-menu-item index="/stress-test">
+          <el-icon><DataAnalysis /></el-icon>
+          <span>压力测试</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
