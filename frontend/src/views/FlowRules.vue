@@ -30,7 +30,9 @@
         </el-table-column>
         <el-table-column label="状态" width="80">
           <template #default="{ row }">
-            <el-switch :model-value="row.enabled" @change="(v) => toggle(row, v)" />
+            <el-tag :type="row.enabled ? 'success' : 'info'" size="small" style="cursor:pointer" @click="toggle(row, !row.enabled)">
+              {{ row.enabled ? '已启用' : '已禁用' }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="description" label="描述" min-width="150" />
@@ -147,8 +149,9 @@ async function doDelete(id) {
 }
 
 async function toggle(row, enabled) {
+  row.enabled = enabled
   try {
-    await updateSentinelRule(row.id, { ...row, enabled })
+    await updateSentinelRule(row.id, { id: row.id, enabled })
     ElMessage.success(enabled ? '已启用' : '已禁用')
   } catch (e) {
     console.error(e)
